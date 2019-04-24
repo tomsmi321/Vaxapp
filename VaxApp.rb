@@ -1,4 +1,7 @@
+require 'rainbow'
+
 class Parent
+    attr_reader :children
     def initialize(name)
         @name = name
         @children = []
@@ -25,12 +28,16 @@ class Parent
             if(child.get_name() == name)
                 return child
             else
-                puts("child not found")
+                # puts("child not found")
             end
         end
     end
 
+    def add_new_child(name, age)
+        @children << Child.new(name, age)
+    end
 end
+
 
 
 class Child 
@@ -108,6 +115,11 @@ class Child
             end
         end
     end
+
+    def add_new_reminder(tag, time)
+        @reminders << Reminder.new(tag, time)
+    end
+
 end
 
 
@@ -126,7 +138,7 @@ class Vaccinations
     end
 
     def to_s()
-        puts("name: #{@name}, qty: #{@quantity}, administration: #{@admin_method}, age required: #{@admin_method}, notes: #{@notes}")
+        puts("name: #{@name}, qty: #{@quantity}, administration: #{@admin_method}, age required: #{@admin_age}, notes: #{@notes}")
     end
 end
 
@@ -165,24 +177,26 @@ end
 class Menu
 
     def landing_menu()
-        puts("""
+        puts Rainbow("Welcome to Vax O'clock").underline.green
+        puts
+        puts Rainbow("""
 Please select one of the following options:
-
 1. Create a new account
 2. Login
-        """)
+        """).cyan
     end
 
     def main_menu()
-        puts("""
-Main Menu
-        
+        puts
+        puts Rainbow("Main Menu").underline.green
+        puts
+        puts Rainbow("""
 Please select one of the following options:        
 1. View your reminders
 2. View completed vaccinations
 3. Add another child
-4. Change your child's details
-        """)
+4. Exit
+""").cyan
     end
 
     def login_page()
@@ -193,6 +207,7 @@ Please select one of the following options:
 
 
 end
+
 
 class Main 
     def run_program()
@@ -224,7 +239,7 @@ class Main
         
         vax_arr = []
 
-        vax_arr.push(vaccination0, vaccination2a, vaccination2b, vaccination2c, vaccination4a, vaccination4b, vaccination4c, vaccination6a)
+        vax_arr.push(vaccination0, vaccination2a, vaccination2b, vaccination2c, vaccination4a, vaccination4b, vaccination4c, vaccination6a, vaccination12a, vaccination12b, vaccination12c)
 
         # , vaccination2a, vaccination2b, vaccination2c, vaccination4a, vaccination4b, vaccination4c, vaccination6a)
 
@@ -237,33 +252,34 @@ class Main
             # if user selects create acc then create a parent and create a child
             if (parent_selection == 1)
                 puts
-                puts("Creat Your Account")
+                puts Rainbow("Create Your Account").underline.green
                 puts
-                puts("Please enter your name:")
+                puts Rainbow("Please enter your name:").cyan
                 parent_name = gets.strip()
                 puts
-                puts("Please enter your childs name:")
+                puts Rainbow("Please enter your childs name:").cyan
                 child_name = gets.strip()
                 puts
-                puts("Please enter your childs age in months:")
+                puts Rainbow("Please enter your childs age in months:").cyan
                 child_age = gets.strip()
-
+                puts
                 parent1 = Parent.new(parent_name)
                 child1 = Child.new(child_name, child_age)
                 parent1.add_child(child1)
             
                 # add reminders to child
-                child1.add_reminder(reminder0)
-                child1.add_reminder(reminder2a)
-                child1.add_reminder(reminder2b)
-                child1.add_reminder(reminder2c)
-                child1.add_reminder(reminder4a)
-                child1.add_reminder(reminder4b)
-                child1.add_reminder(reminder4c)
-                child1.add_reminder(reminder6a)
-                child1.add_reminder(reminder12a)
-                child1.add_reminder(reminder12b)
-                child1.add_reminder(reminder12c)
+                parent1.select_child_by_name(child_name).add_reminder(reminder0)
+                parent1.select_child_by_name(child_name).add_reminder(reminder2a)
+                parent1.select_child_by_name(child_name).add_reminder(reminder2b)
+                parent1.select_child_by_name(child_name).add_reminder(reminder2c)
+                parent1.select_child_by_name(child_name).add_reminder(reminder4a)
+                parent1.select_child_by_name(child_name).add_reminder(reminder4b)
+                parent1.select_child_by_name(child_name).add_reminder(reminder4c)
+                parent1.select_child_by_name(child_name).add_reminder(reminder6a)
+                parent1.select_child_by_name(child_name).add_reminder(reminder12a)
+                parent1.select_child_by_name(child_name).add_reminder(reminder12b)
+                parent1.select_child_by_name(child_name).add_reminder(reminder12c)
+                
 
                 loop_condition = false
                 # if the choose to log in then take them to the login page and end menu loop
@@ -271,39 +287,72 @@ class Main
                 menu1.login_page
                 loop_condition = false
             else
-                puts("Invalid selection, please try again")
+                puts
+                puts Rainbow("Invalid selection, please try again").cyan
+                puts
                 loop_condition = true
             end
         end
 
         # take the user to the main menu and get their selection
-        menu1.main_menu
-        parent_selection = gets.strip().to_i
-        # if they select option 1 then ask them which child and print reminders for that child
-        if (parent_selection == 1)
-            puts
-            puts("View Your Reminders")
-            puts
-            puts("Which child would you like to view reminders for?")
-            parent_child_selection = gets.strip()
-            puts
-            parent1.select_child_by_name(parent_child_selection).print_reminders
-            puts
-            puts("Would you like to mark one of these reminders as completed and add them to your childs list of completed vaccinations? (y/n)")
-            parent_response = gets.strip()
-            puts
-            if(parent_response == "y")
-                puts("Please tell us which reminder you would like to remove:")
-                reminder_tag = gets.strip()
-                child = parent1.select_child_by_name(parent_child_selection)
-                child_reminders = child.get_reminders
-                child.remove_reminder_by_tag(reminder_tag, child_reminders)
-                # add vaccination to child vaccination array
-                vac_name = reminder_tag
-                child.add_vacccination_by_name(vac_name, vax_arr)
+        loop_condition = true
+        while(loop_condition == true)
+            menu1.main_menu
+            parent_selection = gets.strip().to_i
+            # if they select option 1 then ask them which child and print reminders for that child
+            if (parent_selection == 1)
+                puts
+                puts Rainbow("View Your Reminders").underline.green
+                puts
+                puts Rainbow("Which child would you like to view reminders for?").cyan
+                parent_child_selection = gets.strip()
+                puts
+                parent1.select_child_by_name(parent_child_selection).print_reminders
+                puts
+                puts Rainbow("Would you like to mark one of these reminders as completed and add them to your childs list of completed vaccinations? (y/n)").cyan
+                parent_response = gets.strip()
+                puts
+                if(parent_response == "y")
+                    puts Rainbow("Please tell us which reminder you would like to remove:").cyan
+                    reminder_tag = gets.strip()
+                    child = parent1.select_child_by_name(parent_child_selection)
+                    child_reminders = child.get_reminders
+                    child.remove_reminder_by_tag(reminder_tag, child_reminders)
+                    puts
+                    # add vaccination to child vaccination array
+                    vac_name = reminder_tag
+                    child.add_vacccination_by_name(vac_name, vax_arr) 
+                end
+            elsif (parent_selection == 2)
+                puts
+                puts Rainbow("Please enter the name of your child:").cyan
+                parent_child_selection = gets.strip()
+                parent1.select_child_by_name(parent_child_selection).print_vaccinations
+            elsif(parent_selection == 3)
+                puts
+                puts Rainbow("Please enter your childs name:").cyan
+                child_name = gets.strip()
+                puts
+                puts Rainbow("Please enter your childs age in months:").cyan
+                child_age = gets.strip()
+                puts
+                parent1.add_new_child(child_name, child_age)
+                # puts(parent1.select_child_by_name(child_name).get_name)
+                parent1.select_child_by_name(child_name).add_reminder(reminder0)
+                parent1.select_child_by_name(child_name).add_reminder(reminder2a)
+                parent1.select_child_by_name(child_name).add_reminder(reminder2b)
+                parent1.select_child_by_name(child_name).add_reminder(reminder2c)
+                parent1.select_child_by_name(child_name).add_reminder(reminder4a)
+                parent1.select_child_by_name(child_name).add_reminder(reminder4b)
+                parent1.select_child_by_name(child_name).add_reminder(reminder4c)
+                parent1.select_child_by_name(child_name).add_reminder(reminder6a)
+                parent1.select_child_by_name(child_name).add_reminder(reminder12a)
+                parent1.select_child_by_name(child_name).add_reminder(reminder12b)
+                parent1.select_child_by_name(child_name).add_reminder(reminder12c)
+            elsif (parent_selection == 4)
+                loop_condition = false
             end
         end
-
     end
 end
 
