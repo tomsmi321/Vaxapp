@@ -77,6 +77,12 @@ class Child
         @vaccinations.include?(vaccination)
     end
 
+    def print_vaccinations()
+        get_vaccinations().each do |vaccination|
+            print(vaccination.to_s)
+        end
+    end
+
     def get_reminders()
         @reminders
     end
@@ -91,7 +97,7 @@ class Child
 
     def print_reminders()
         get_reminders().each do |reminder|
-            print(reminder.get_message)
+            puts(reminder.get_message)
         end
     end
 
@@ -123,6 +129,7 @@ class Vaccinations
         puts("name: #{@name}, qty: #{@quantity}, administration: #{@admin_method}, age required: #{@admin_method}, notes: #{@notes}")
     end
 end
+
 
 
 
@@ -159,28 +166,28 @@ class Menu
 
     def landing_menu()
         puts("""
-        Please select one of the following options:
+Please select one of the following options:
 
-        1. Create a new account
-        2. Login
+1. Create a new account
+2. Login
         """)
     end
 
     def main_menu()
         puts("""
-        MAIN MENU
+Main Menu
         
-        Please select one of the following options:
-        
-        1. View your reminders
-        2. View completed vaccinations
-        3. Add another child
-        4. Change your child's details
+Please select one of the following options:        
+1. View your reminders
+2. View completed vaccinations
+3. Add another child
+4. Change your child's details
         """)
     end
 
     def login_page()
-        puts("please enter your name:")
+        puts("Please enter your name:")
+        puts
     end
 
 
@@ -191,16 +198,35 @@ class Main
     def run_program()
         # create reminder objects
         reminder0 = Reminder.new("Hepatitis B", 0)
-        reminder2a = Reminder.new("Infanrix hexa", 2)
-        reminder2b = Reminder.new("Prevenar 13", 2)
-        reminder2c = Reminder.new("Rotarix", 2)
-        reminder4a = Reminder.new("Infanrix hexa", 4)
-        reminder4b = Reminder.new("Prevenar 13", 4)
-        reminder4c = Reminder.new("Rotarix", 4)
-        reminder6a = Reminder.new("Infanrix hexa", 6)
+        reminder2a = Reminder.new("Infanrix hexa 2a", 2)
+        reminder2b = Reminder.new("Prevenar 13 2b", 2)
+        reminder2c = Reminder.new("Rotarix 2c", 2)
+        reminder4a = Reminder.new("Infanrix hexa 4a", 4)
+        reminder4b = Reminder.new("Prevenar 13 4b", 4)
+        reminder4c = Reminder.new("Rotarix 4c", 4)
+        reminder6a = Reminder.new("Infanrix hexa 6a", 6)
+        reminder12a = Reminder.new("MMR II/Prioix", 12)
+        reminder12b = Reminder.new("Prevenar 13 12b", 12)
+        reminder12c = Reminder.new("Nimenrix", 12)
         
         # create vaccination objects
+        vaccination0 = Vaccinations.new("Hepatitis B", 0.5, "Intramuscular", 0, "Give withing 7 days of birth, ideally within the first 24 hours")
+        vaccination2a = Vaccinations.new("Infanrix hexa 2a", 0.5, "Intramuscular", 2, "")
+        vaccination2b = Vaccinations.new("Prevenar 13 2b", 0.5, "Intramuscular", 2, "")
+        vaccination2c = Vaccinations.new("Rotarix 2c", 1.5, "Orally", 2, "")
+        vaccination4a = Vaccinations.new("Infanrix hexa 4a", 0.5, "Intramuscular", 4, "")
+        vaccination4b = Vaccinations.new("Prevenar 13 4b", 0.5, "Intramuscular", 4, "")
+        vaccination4c = Vaccinations.new("Rotarix 4c", 1.5, "Orally", 4, "")
+        vaccination6a = Vaccinations.new("Infanrix hexa 6a", 0.5, "Intramuscular", 6, "")
+        vaccination12a = Vaccinations.new("MMR II/Prioix", 0.5, "Intramuscular or Subcutaneous", 12, "")
+        vaccination12b = Vaccinations.new("Prevenar 13 12b", 0.5, "Intramuscular", 12, "")
+        vaccination12c = Vaccinations.new("Nimenrix", 0.5, "Intramuscular", 12, "")
+        
+        vax_arr = []
 
+        vax_arr.push(vaccination0, vaccination2a, vaccination2b, vaccination2c, vaccination4a, vaccination4b, vaccination4c, vaccination6a)
+
+        # , vaccination2a, vaccination2b, vaccination2c, vaccination4a, vaccination4b, vaccination4c, vaccination6a)
 
         # display the landing menu to the user and get their selection
         menu1 = Menu.new()
@@ -210,11 +236,16 @@ class Main
             parent_selection = gets.strip().to_i
             # if user selects create acc then create a parent and create a child
             if (parent_selection == 1)
-                puts("Please enter your name")
+                puts
+                puts("Creat Your Account")
+                puts
+                puts("Please enter your name:")
                 parent_name = gets.strip()
-                puts("Please enter your childs name")
+                puts
+                puts("Please enter your childs name:")
                 child_name = gets.strip()
-                puts("Please enter your childs age in months")
+                puts
+                puts("Please enter your childs age in months:")
                 child_age = gets.strip()
 
                 parent1 = Parent.new(parent_name)
@@ -230,9 +261,10 @@ class Main
                 child1.add_reminder(reminder4b)
                 child1.add_reminder(reminder4c)
                 child1.add_reminder(reminder6a)
+                child1.add_reminder(reminder12a)
+                child1.add_reminder(reminder12b)
+                child1.add_reminder(reminder12c)
 
-                # print reminders for child and end menu loop
-                child1.print_reminders
                 loop_condition = false
                 # if the choose to log in then take them to the login page and end menu loop
             elsif(parent_selection == 2)
@@ -249,18 +281,26 @@ class Main
         parent_selection = gets.strip().to_i
         # if they select option 1 then ask them which child and print reminders for that child
         if (parent_selection == 1)
-            puts("which child would you like to view reminders for?")
+            puts
+            puts("View Your Reminders")
+            puts
+            puts("Which child would you like to view reminders for?")
             parent_child_selection = gets.strip()
+            puts
             parent1.select_child_by_name(parent_child_selection).print_reminders
-            puts("would you like to mark and of these reminders as completed and add them to your childs list of completed vaccinations? (y/n)")
+            puts
+            puts("Would you like to mark one of these reminders as completed and add them to your childs list of completed vaccinations? (y/n)")
             parent_response = gets.strip()
+            puts
             if(parent_response == "y")
-                puts("please tell us which reminder you would like to remove:")
+                puts("Please tell us which reminder you would like to remove:")
                 reminder_tag = gets.strip()
                 child = parent1.select_child_by_name(parent_child_selection)
                 child_reminders = child.get_reminders
                 child.remove_reminder_by_tag(reminder_tag, child_reminders)
                 # add vaccination to child vaccination array
+                vac_name = reminder_tag
+                child.add_vacccination_by_name(vac_name, vax_arr)
             end
         end
 
