@@ -24,13 +24,21 @@ class Parent
     end
 
     def select_child_by_name(name)
-        @children.each do |child|
-            if(child.get_name() == name)
-                return child
-            else
-                # puts("child not found")
+        count = 0
+        while(count < @children.length)
+            if(@children[count].get_name() == name)
+                return @children[count]
             end
+            count += 1
         end
+    end
+
+    def child_in_children?(name)
+        while(select_child_by_name(name) == nil)
+            puts("child not found, please try again")
+            name = gets.strip()
+        end
+        return name
     end
 
     def add_new_child(name, age)
@@ -205,15 +213,41 @@ Please select one of the following options:
     end
 end
 
-class CreateObjects
+class Validator
+    class << self
+        def string_of_nums?(input)
+            !!Integer(input) rescue false
+        end
 
-    def create_reminder_objects()
-        
+        def get_an_age()
+            puts Rainbow("Please enter you childs age in months").cyan
+            input = gets.strip()
+            while(string_of_nums?(input) == false)
+                puts("Invalid input, please try again")
+                input = gets.strip()
+            end
+            return input
+        end
+
+        def get_a_name(message)
+            puts Rainbow("Please enter your #{message}").cyan
+            input = gets.strip()
+            while(input.strip() == "")
+                puts("please enter something")
+                input = gets.strip()
+            end
+            return input
+        end
     end
 end
 
+
+
 class Main 
     def run_program()
+        # #create validator object
+        # validator_obj = Validator.new()
+
         # create reminder objects
         reminder0 = Reminder.new("Hepatitis B", 0)
         reminder2a = Reminder.new("Infanrix hexa 2a", 2)
@@ -260,20 +294,21 @@ class Main
                 puts
                 puts Rainbow("Create Your Account").underline.green
                 puts
-                puts Rainbow("Please enter your name:").cyan
-                parent_name = gets.strip()
+                # get the parents name
+                parent_name = Validator.get_a_name("name")
                 puts
-                puts Rainbow("Please enter your childs name:").cyan
-                child_name = gets.strip()
+                # get the childs name
+                child_name = Validator.get_a_name("childs name")
                 puts
-                puts Rainbow("Please enter your childs age in months:").cyan
-                child_age = gets.strip()
+                # get the childs age
+                child_age = Validator.get_an_age()
                 puts
                 parent1 = Parent.new(parent_name)
                 parent1.add_new_child(child_name, child_age)
 
                 # add reminders to child
                 parent1.select_child_by_name(child_name).add_reminders(reminder_arr)
+
                 loop_condition = false
 
                 # if the choose to log in then take them to the login page and end menu loop
@@ -288,6 +323,7 @@ class Main
             end
         end
 
+
         # take the user to the main menu and get their selection
         loop_condition = true
         while(loop_condition == true)
@@ -300,8 +336,8 @@ class Main
                 puts
                 puts Rainbow("Which child would you like to view reminders for?").cyan
                 parent_child_selection = gets.strip()
-                puts
-                parent1.select_child_by_name(parent_child_selection).print_reminders
+                child_name = parent1.child_in_children?(parent_child_selection)
+                parent1.select_child_by_name(child_name).print_reminders()
                 puts
                 puts Rainbow("Would you like to mark one of these reminders as completed and add them to your childs list of completed vaccinations? (y/n)").cyan
                 parent_response = gets.strip()
@@ -324,7 +360,7 @@ class Main
                 puts
                 puts Rainbow("Please enter the name of your child:").cyan
                 parent_child_selection = gets.strip()
-                parent1.select_child_by_name(parent_child_selection).print_vaccinations
+                parent1.select_child_by_name(parent_child_selection).print_vaccinations()
             # if they select option 3 then promt the user for input and create a new child
             elsif(parent_selection == 3)
                 puts
@@ -336,11 +372,15 @@ class Main
                 puts
                 # create the new child and add to the parent
                 parent1.add_new_child(child_name, child_age)
-                
                 # add the list of reminders to the child
                 parent1.select_child_by_name(child_name).add_reminders(reminder_arr)
             elsif (parent_selection == 4)
+                puts
+                puts("See you next time")
+                puts
                 loop_condition = false
+            else
+                puts("Invalid selection, please try again")
             end
         end
     end
